@@ -1,28 +1,41 @@
-from setuptools import setup
+import os
+from setuptools import setup, find_packages
 
-with open("README.md", "r") as f:
-    long_description = f.read()
+
+# with open("README.md", "r", encoding="utf-8") as f:
+#     long_description = f.read()
+
+
+version = {}
+with open(os.path.join("eco2ai", "__init__.py")) as f:
+    exec(f.read(), version)
 
 DEPENDENCIES = [
     "APScheduler",
     "pynvml>=5.6.2",
     "psutil",
     "py-cpuinfo",
+    "numpy",
+    "pandas",
+    "tzlocal",
+    "requests", 
 ]
 
 setup(
-    name = 'eco2ai',
-    author=["Vladimir Lazarev", 'Nikita Zakharenko', 'Alexey Korovin', 'Semyon Budyonny', 'Leonid Zhukov'],
-    description = long_description,
-    packages = ['eco2ai'],
+    name="eco2ai_jsonbin",
+    description="Carbon emission tracker for AI/ML experiments",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    packages=find_packages(),
     install_requires=DEPENDENCIES,
     package_data={
         "eco2ai": [
             "data/cpu_names.csv",
             "data/config.txt",
-            "data/carbon_index.csv"
+            "data/carbon_index.csv",
         ]
     },
     include_package_data=True,
-    version=__version__
+    version=version["__version__"],
+    python_requires=">=3.7",
 )
