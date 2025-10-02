@@ -72,6 +72,7 @@ class Tracker:
         ignore_warnings=False,
         timezone=False,
         jsonbin_api_key=None, 
+        jsonbin_bin_id = None
     ):
         """
         This class method initializes a Tracker object and creates fields of class object
@@ -203,6 +204,7 @@ You can find the ISO-Alpha-2 code of your country here: https://www.iban.com/cou
         # parameters to save during model training
         self._parameters_to_save = ""
         self._jsonbin_api_key = jsonbin_api_key
+        self._jsonbin_bin_id = jsonbin_bin_id
 
     def get_set_params(
         self, project_name=None, experiment_description=None, file_name=None, measure_period=None, pue=None
