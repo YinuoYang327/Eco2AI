@@ -11,6 +11,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from eco2ai.tools.tools_gpu import GPU, all_available_gpu
 from eco2ai.tools.tools_cpu import CPU, all_available_cpu
 from eco2ai.tools.tools_ram import RAM
+from eco2ai.uploader import upload_to_jsonbin
 from eco2ai.utils import (
     is_file_opened,
     define_carbon_index,
@@ -499,7 +500,7 @@ You can find the ISO-Alpha-2 code of your country here: https://www.iban.com/cou
             df = pd.read_csv(self.file_name)
             json_file = self.file_name.replace(".csv", ".json")
             df.to_json(json_file, orient="records", indent=2)
-            print(f"✅ Exported JSON to {json_file}")
+            print(f"Exported JSON to {json_file}")
 
             # upload to JSONBin (optional)
             if hasattr(self, "_jsonbin_api_key") and self._jsonbin_api_key:
