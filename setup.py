@@ -1,11 +1,6 @@
 import os
 from setuptools import setup, find_packages
 
-
-# with open("README.md", "r", encoding="utf-8") as f:
-#     long_description = f.read()
-
-
 version = {}
 with open(os.path.join("eco2ai", "__init__.py")) as f:
     exec(f.read(), version)
@@ -24,7 +19,7 @@ DEPENDENCIES = [
 setup(
     name="eco2ai_jsonbin",
     description="Carbon emission tracker for AI/ML experiments",
-    long_description=long_description,
+    long_description="Track CO2 emissions of AI/ML experiments and export results to JSON/JSONBin.",
     long_description_content_type="text/markdown",
     packages=find_packages(),
     install_requires=DEPENDENCIES,
