@@ -1,9 +1,4 @@
-import os
 from setuptools import setup, find_packages
-
-version = {}
-with open(os.path.join("eco2ai", "__init__.py")) as f:
-    exec(f.read(), version)
 
 DEPENDENCIES = [
     "APScheduler",
@@ -18,9 +13,12 @@ DEPENDENCIES = [
 
 setup(
     name="eco2ai",
+    version="0.3.13",   
     description="Carbon emission tracker for AI/ML experiments",
     long_description="Track CO2 emissions of AI/ML experiments and export results to JSON/JSONBin.",
     long_description_content_type="text/markdown",
+    author="Yinuo Yang",
+    url="https://github.com/YinuoYang327/eco2ai",
     packages=find_packages(),
     install_requires=DEPENDENCIES,
     package_data={
@@ -31,6 +29,5 @@ setup(
         ]
     },
     include_package_data=True,
-    version=version["__version__"],
     python_requires=">=3.7",
 )
