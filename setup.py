@@ -17,7 +17,7 @@ DEPENDENCIES = [
 ]
 
 setup(
-    name="eco2ai_jsonbin",
+    name="eco2ai",
     description="Carbon emission tracker for AI/ML experiments",
     long_description="Track CO2 emissions of AI/ML experiments and export results to JSON/JSONBin.",
     long_description_content_type="text/markdown",
