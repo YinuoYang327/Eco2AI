@@ -426,104 +426,71 @@ You can find the ISO-Alpha-2 code of your country here: https://www.iban.com/cou
         # If none of the above checks pass, replace with np.nan
         return np.nan
 
-    def _write_to_csv(self,add_new=False):
+    def _write_to_csv(self, add_new=False):
         """
-        This class method writes to .csv file calculation results,
-        then also exports to .json, and optionally uploads to JSONBin.
-
-        Parameters
-        ----------
-        add_new: bool
-            Parameter, defining if function should add additional row to the dataframe
-            "add_new" == True when new epoch in training was started
-
-        Returns
-        -------
-        attributes_dict: dict
-            Dictionary with all the attributes that should be written to .csv file
+        Writes results to .csv, exports to .json, and optionally uploads to JSONBin.
         """
         attributes_dict = self._construct_attributes_dict()
-
-        # Write CSV
+    
+        # === CSV ===
         if not os.path.isfile(self.file_name):
-            while True:
-                if not is_file_opened(self.file_name):
-                    open(self.file_name, "w").close()
-                    tmp = open(self.file_name, "w")
-                    pd.DataFrame(attributes_dict).to_csv(self.file_name, index=False)
-                    tmp.close()
-                    break
-                else:
-                    time.sleep(0.5)
+            pd.DataFrame(attributes_dict).to_csv(self.file_name, index=False)
         else:
-            while True:
-                if not is_file_opened(self.file_name):
-                    with open(self.file_name, "r"):
-                        attributes_dataframe = pd.read_csv(self.file_name)
-
-                        # Convert attributes_dict values into a flat list
-                        attributes_array = []
-                        for element in attributes_dict.values():
-                            attributes_array += element
-
-                        if attributes_dataframe[attributes_dataframe["id"] == self._id].shape[0] == 0:
-                            # Adding a new row
-                            attributes_dataframe.loc[len(attributes_dataframe)] = attributes_array
-                        else:
-                            # Updating or inserting a row
-                            row_index = attributes_dataframe[attributes_dataframe["id"] == self._id].index.values[-1]
-
-                            if add_new:
-                                # Insert a new row
-                                attributes_dataframe = pd.DataFrame(
-                                    np.vstack(
-                                        (
-                                            attributes_dataframe.values[: row_index + 1],
-                                            attributes_array,
-                                            attributes_dataframe.values[row_index + 1 :],
-                                        )
-                                    ),
-                                    columns=attributes_dataframe.columns,
-                                )
-                            else:
-                                # Update the existing row
-                                attributes_dataframe.loc[row_index] = attributes_array
-
-                        # Save updated DataFrame to file
-                        attributes_dataframe.to_csv(self.file_name, index=False)
-                    break
+            df = pd.read_csv(self.file_name)
+            attributes_array = []
+            for element in attributes_dict.values():
+                attributes_array += element
+    
+            if df[df["id"] == self._id].shape[0] == 0:
+                df.loc[len(df)] = attributes_array
+            else:
+                row_index = df[df["id"] == self._id].index.values[-1]
+                if add_new:
+                    df = pd.DataFrame(
+                        np.vstack((df.values[: row_index + 1], attributes_array, df.values[row_index + 1 :])),
+                        columns=df.columns,
+                    )
                 else:
-                    time.sleep(0.5)
-
-        # CSV to JSON
+                    df.loc[row_index] = attributes_array
+    
+            df.to_csv(self.file_name, index=False)
+    
+        # === JSON ===
         try:
             df = pd.read_csv(self.file_name)
             json_file = self.file_name.replace(".csv", ".json")
             df.to_json(json_file, orient="records", indent=2)
             print(f"Exported JSON to {json_file}")
-
-            # upload to JSONBin (optional)
-            if hasattr(self, "_jsonbin_api_key") and self._jsonbin_api_key:
+    
+            # === JSONBin ===
+            if self._jsonbin_api_key:
                 import requests, json
-                url = "https://api.jsonbin.io/v3/b"
                 headers = {
                     "Content-Type": "application/json",
                     "X-Master-Key": self._jsonbin_api_key
                 }
                 with open(json_file, "r") as f:
                     data = json.load(f)
-                response = requests.post(url, headers=headers, json=data)
-                if response.status_code == 200:
-                    print("JSON uploaded to JSONBin")
-                    print("Bin ID:", response.json()["metadata"]["id"])
-                    print("Address:", f"https://jsonbin.io/{response.json()['metadata']['id']}")
+    
+                if self._jsonbin_bin_id:  # pre-existed bin
+                    url = f"https://api.jsonbin.io/v3/b/{self._jsonbin_bin_id}"
+                    response = requests.put(url, headers=headers, json=data)
+                else:  # new bin
+                    url = "https://api.jsonbin.io/v3/b"
+                    response = requests.post(url, headers=headers, json=data)
+    
+                if response.status_code in (200, 201):
+                    bin_id = response.json()["metadata"]["id"]
+                    self._jsonbin_bin_id = bin_id  
+                    public_url = f"https://jsonbin.io/{bin_id}"
+                    print("JSON uploaded to JSONBin:", public_url)
+                    return {"json_file": json_file, "jsonbin_url": public_url}
                 else:
-                    warnings.warn(f"Failed to upload to JSONBin: {response.status_code} {response.text}")
-
+                    warnings.warn(f"Upload failed: {response.status_code} {response.text}")
+    
         except Exception as e:
             warnings.warn(f"Failed to export/upload JSON: {e}")
-
-        self._mode = "run time" if self._mode != "training" else "training"
+    
         return attributes_dict
 
 
