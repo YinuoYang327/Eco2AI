@@ -17,8 +17,6 @@ from eco2ai.utils import (
     define_carbon_index,
     get_params,
     set_params,
-    # calculate_money,
-    # summary,
     encode,
     encode_dataframe,
     electricity_pricing_check,
@@ -31,7 +29,7 @@ from pandas.api.types import is_numeric_dtype, is_string_dtype, is_categorical_d
 
 FROM_mWATTS_TO_kWATTH = 1000 * 1000 * 3600
 FROM_kWATTH_TO_MWATTH = 1000
-__version__ = '0.3.12'
+__version__ = '0.3.13'
 
 class IncorrectMethodSequenceError(Exception):
     pass
@@ -652,7 +650,8 @@ Please, use the interface for training: ".start_training", ".new_epoch", and "st
             try:
                 self._scheduler.remove_job("job")
                 self._scheduler.shutdown()
-            except:
+            except (KeyError, AttributeError):
+                # Scheduler job may not exist or scheduler already shutdown
                 pass
             self._scheduler = BackgroundScheduler(job_defaults={"max_instances": 10}, misfire_grace_time=None)
         self._cpu = CPU(cpu_processes=self._cpu_processes, ignore_warnings=self._ignore_warnings)
@@ -792,20 +791,6 @@ def track(func):
     No returns.
 
     """
-
-    # def inner(*args, **kwargs):
-    #     tracker = Tracker()
-    #     tracker.start()
-    #     try:
-    #         returned = func(*args, **kwargs)
-    #     except Exception:
-    #         tracker.stop()
-    #         del tracker
-    #         raise Exception
-    #     tracker.stop()
-    #     del tracker
-    #     return returned
-
     def inner(*args, **kwargs):
         tracker = Tracker()
         tracker.start()

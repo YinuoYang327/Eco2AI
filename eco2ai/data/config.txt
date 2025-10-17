@@ -1,1 +1,1 @@
-{"project_name": "YourProjectName", "experiment_description": "training the <your model> model", "file_name": "my_emission.csv", "measure_period": 1, "pue": 1}
+{"project_name": "Quick Test", "experiment_description": "default experiment description", "file_name": "quick_test.csv", "measure_period": 10, "pue": 1}

@@ -217,7 +217,8 @@ class GPU:
                 gpus_name.append(pynvml.nvmlDeviceGetName(handle))
             pynvml.nvmlShutdown()
             return gpus_name[0].encode().decode("UTF-8")
-        except:
+        except (pynvml.NVMLError, IndexError, AttributeError):
+            # No GPU available or NVML library error
             return ""
 
     def gpu_num(self):
@@ -243,7 +244,8 @@ class GPU:
                 pynvml.nvmlDeviceGetPowerUsage(handle)
             pynvml.nvmlShutdown()
             return deviceCount
-        except:
+        except pynvml.NVMLError:
+            # No GPU available or NVML library error
             return 0
 
 
@@ -302,6 +304,6 @@ def all_available_gpu():
         {gpus_name[0].decode("UTF-8")}: {deviceCount} device(s)"""
         print(string)
         pynvml.nvmlShutdown()
-    except:
+    except (pynvml.NVMLError, IndexError, AttributeError):
         print("There is no any available gpu device(s)")
         

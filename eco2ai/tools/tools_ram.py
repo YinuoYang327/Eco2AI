@@ -3,7 +3,10 @@ import time
 import os
 
 
+# Power consumption constants
 FROM_WATTs_TO_kWATTh = 1000*3600
+# Average power consumption per GB of RAM in watts (based on DDR4 standard)
+WATTS_PER_GB_RAM = 3 / 8
 
 
 class RAM():
@@ -96,8 +99,7 @@ class RAM():
         """
         time_period = time.time() - self._start
         self._start = time.time()
-        consumption = self._get_memory_used() * (3 / 8) * time_period / FROM_WATTs_TO_kWATTh
+        consumption = self._get_memory_used() * WATTS_PER_GB_RAM * time_period / FROM_WATTs_TO_kWATTh
 
         self._consumption += consumption
-        # print(self._consumption)
         return consumption

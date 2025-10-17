@@ -69,7 +69,8 @@ def is_file_opened(
                     for nt in flist:
                         if needed_file in nt.path:
                             result = True
-        except:
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            # Process may have terminated or we don't have permission to access it
             pass
     return result
 
@@ -118,9 +119,11 @@ def define_carbon_index(
     carbon_index_table_name = resource_stream('eco2ai', 'data/carbon_index.csv').name
     if alpha_2_code is None:
         try:
-            ip_dict = eval(requests.get("https://ipinfo.io/").content)
-        except:
-            ip_dict = eval(requests.get("https://ipinfo.io/").content.decode('ascii'))
+            response = requests.get("https://ipinfo.io/")
+            ip_dict = json.loads(response.content)
+        except (json.JSONDecodeError, requests.RequestException):
+            response = requests.get("https://ipinfo.io/")
+            ip_dict = json.loads(response.content.decode('ascii'))
         country = ip_dict['country']
         region = ip_dict['region']
     else:
@@ -436,7 +439,8 @@ def encode(f_string):
         try:
             index = symbols.index(letter)
             encoded_string += symbols[index+n]
-        except:
+        except (ValueError, IndexError):
+            # Letter not found in symbols or index out of range
             encoded_string += letter
     return encoded_string
 
