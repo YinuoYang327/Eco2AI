@@ -28,8 +28,12 @@ class TestCPU:
 
     def test_all_available_cpu(self):
         """Test all_available_cpu function"""
-        cpu_info = all_available_cpu()
-        assert cpu_info is not None
+        # This function prints to stdout, doesn't return a value
+        try:
+            all_available_cpu()
+            # If it runs without error, the test passes
+        except Exception:
+            pytest.fail("all_available_cpu() raised an exception")
 
 
 class TestGPU:
