@@ -1,5 +1,61 @@
 # Eco2AI
 
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            YOUR ML/AI CODE                                  │
+│                                                                             │
+│    import eco2ai                                                            │
+│    tracker = eco2ai.Tracker(project_name="...")                            │
+│    tracker.start()  ──────────────┐                                        │
+│    # Your training/computation    │                                        │
+│    tracker.stop()   ◄──────────────┘                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          ECO2AI TRACKER ENGINE                              │
+│                                                                             │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                │
+│  │   CPU Tool   │    │   GPU Tool   │    │   RAM Tool   │                │
+│  │  Power (W)   │    │  Power (W)   │    │  Power (W)   │                │
+│  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘                │
+│         │                   │                   │                          │
+│         └───────────────────┼───────────────────┘                          │
+│                             ▼                                               │
+│                  ┌─────────────────────┐                                   │
+│                  │ Emission Calculator │                                   │
+│                  │  • Regional Carbon  │                                   │
+│                  │    Intensity (CI)   │                                   │
+│                  │  • PUE Factor       │                                   │
+│                  │  • Cost Pricing     │                                   │
+│                  └──────────┬──────────┘                                   │
+└─────────────────────────────┼───────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         OUTPUT & EXPORT                                     │
+│                                                                             │
+│   ┌─────────┐      ┌─────────┐      ┌──────────────┐                      │
+│   │   CSV   │      │  JSON   │      │  JSONBin.io  │                      │
+│   │  Local  │      │  Local  │      │    Cloud     │                      │
+│   └─────────┘      └─────────┘      └──────┬───────┘                      │
+│                                             │                               │
+│   📊 Metrics: CO2(kg) • kWh • Duration • Cost • Hardware Info              │
+└─────────────────────────────────────────────┼───────────────────────────────┘
+                                              │
+                                              │ API Access
+                                              ▼
+                                ┌──────────────────────────┐
+                                │   FRONTEND UI/DASHBOARD  │
+                                │                          │
+                                │  • Real-time Monitoring  │
+                                │  • Historical Analysis   │
+                                │  • Emission Reports      │
+                                │  • Cost Visualization    │
+                                │  • Multi-Project Compare │
+                                └──────────────────────────┘
+```
+
 A Python package for tracking CO2 emissions of AI/ML experiments and computational processes.
 
 ## Overview
