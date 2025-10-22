@@ -1,5 +1,6 @@
 import json
 import requests
+import warnings
 
 def upload_to_jsonbin(json_data, api_key, bin_id=None):
     """
@@ -29,4 +30,15 @@ def upload_to_jsonbin(json_data, api_key, bin_id=None):
 
     if response.status_code not in (200, 201):
         raise Exception(f"Upload failed: {response.text}")
-    return response.json()
+    res_json = response.json()
+    if "id" in res_json:
+        bin_id = res_json["id"]
+    elif "metadata" in res_json and "id" in res_json["metadata"]:
+        bin_id = res_json["metadata"]["id"]
+    else:
+        warnings.warn(f"Unexpected JSONBin response format: {res_json}")
+        return {"response": res_json}
+
+    jsonbin_url = f"https://jsonbin.io/{bin_id}"
+    return {"id": bin_id, "url": jsonbin_url, "response": res_json}
+    
