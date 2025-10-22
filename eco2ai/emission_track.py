@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
 import os
 import time
 import platform
@@ -39,7 +42,7 @@ class Tracker:
     """
     This class calculates CO2 emissions during CPU or GPU calculations
     In order to calculate CPU & GPU power consumption correctly you should create the 'Tracker' before any CPU or GPU usage
-    It is recommended to create a new “Tracker” object per every new calculation.
+    It is recommended to create a new "Tracker" object per every new calculation.
 
     Example
     ----------
@@ -464,7 +467,7 @@ You can find the ISO-Alpha-2 code of your country here: https://www.iban.com/cou
     
             # === JSONBin ===
             if self._jsonbin_api_key:
-                import requests, json
+                import requests, json, warnings 
                 headers = {
                     "Content-Type": "application/json",
                     "X-Master-Key": self._jsonbin_api_key
@@ -480,11 +483,21 @@ You can find the ISO-Alpha-2 code of your country here: https://www.iban.com/cou
                     response = requests.post(url, headers=headers, json=data)
     
                 if response.status_code in (200, 201):
-                    bin_id = response.json()["metadata"]["id"]
-                    self._jsonbin_bin_id = bin_id  
-                    public_url = f"https://jsonbin.io/{bin_id}"
-                    print("JSON uploaded to JSONBin:", public_url)
-                    return {"json_file": json_file, "jsonbin_url": public_url}
+                    try:
+                        res_json = response.json()
+                        if "metadata" in res_json and "id" in res_json["metadata"]:
+                            bin_id = res_json["metadata"]["id"]
+                        elif "id" in res_json:
+                            bin_id = res_json["id"]
+                        else:
+                            raise KeyError(f"Unrecognized JSONBin response: {res_json}")
+                        
+                        self._jsonbin_bin_id = bin_id
+                        public_url = f"https://api.jsonbin.io/v3/b/{bin_id}/latest"
+                        print(f"JSON uploaded to JSONBin (view with API key): {public_url}")
+                        return {"json_file": json_file, "jsonbin_url": public_url}
+                    except Exception as e:
+                        warnings.warn(f"Upload succeeded but failed to parse ID: {e}\nResponse: {response.text}")
                 else:
                     warnings.warn(f"Upload failed: {response.status_code} {response.text}")
     
